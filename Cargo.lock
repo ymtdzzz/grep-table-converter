@@ -76,7 +76,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "grepross"
+name = "grep-into-table"
 version = "0.1.0"
 dependencies = [
  "anyhow",

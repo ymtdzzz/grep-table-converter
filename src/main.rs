@@ -1,4 +1,4 @@
-extern crate grepross;
+extern crate grep_into_table;
 
 use log::*;
 use pretty_env_logger;
@@ -7,10 +7,10 @@ use std::fs::File;
 use std::io::prelude::*;
 use anyhow::Context as _;
 
-use grepross::generate_csv;
+use grep_into_table::generate_csv;
 
 #[derive(StructOpt, Debug)]
-#[structopt(name = "grepross")]
+#[structopt(name = "grep_into_table")]
 #[structopt(setting(clap::AppSettings::ColoredHelp))]
 struct Opt {
     #[structopt(name = "filename")]
