@@ -76,7 +76,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "grep-into-table"
+name = "grep-table-converter"
 version = "0.1.0"
 dependencies = [
  "anyhow",

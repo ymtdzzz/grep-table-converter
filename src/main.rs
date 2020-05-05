@@ -1,4 +1,4 @@
-extern crate grep_into_table;
+extern crate grep_table_converter;
 
 use log::*;
 use pretty_env_logger;
@@ -7,10 +7,10 @@ use std::fs::File;
 use std::io::prelude::*;
 use anyhow::Context as _;
 
-use grep_into_table::generator::*;
+use grep_table_converter::generator::*;
 
 #[derive(StructOpt, Debug)]
-#[structopt(name = "grep_into_table")]
+#[structopt(name = "grep_table_converter")]
 #[structopt(setting(clap::AppSettings::ColoredHelp))]
 struct Opt {
     #[structopt(name = "filename")]

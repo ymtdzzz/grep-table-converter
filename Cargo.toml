@@ -1,5 +1,5 @@
 [package]
-name = "grep-into-table"
+name = "grep-table-converter"
 version = "0.1.0"
 authors = ["zeroclock <zeroclock@icloud.com>"]
 edition = "2018"
