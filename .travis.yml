@@ -1,0 +1,54 @@
+# Based on the "trust" template v0.1.2
+# https://github.com/japaric/trust/tree/v0.1.2
+
+dist: trusty
+language: rust
+services: docker
+rust:
+  - stable
+sudo: required
+env:
+  global:
+    - NAME=grep-into-table
+
+matrix:
+  include:
+    - env: TARGET=x86_64-unknown-linux-musl
+    - env: TARGET=x86_64-apple-darwin
+      os: osx
+    - env: TARGET=x86_64-pc-windows-gnu
+
+before_install:
+  - rustup self update
+
+install:
+  - source ~/.cargo/env
+  - cargo install --force cross
+
+script:
+  - cross test --target $TARGET --release
+
+before_deploy:
+  - cross build --target $TARGET --release
+  - bin=$NAME
+  - if [[ $TARGET = "x86_64-pc-windows-gnu" ]]; then bin=$NAME.exe; fi
+  - tar czf $NAME-$TRAVIS_TAG-$TARGET.tar.gz -C target/$TARGET/release $bin
+
+deploy:
+  api_key:
+    secure: "XUcGmgcZp5mUWQh2EsHTJ1HySYyvSb+MR6+7VLCq2OxHFqCupTaSAkVAN11amFix+L2NFP+SvAgP2ePEsCiUGYp9N0KsxCusnfOSLAEtTmAU4JqfDzJvoHdtHtA9GjY5ZSThgDomFVNz5T5r3fRJ5aqZ1LSW6g1N4pKCnjGxM3JpDt9sAUv+ckpI+Goo95AjPrVbswP797LR6KoAB2IjdGmnfa5SWYLS1HG0e7N/b92XdYwBh7Oj2Dl2xEmsw9hE+YWW3NKe2slPAkOGTVGZxcmlc/HhbJe8MgmFzZvuigNw0dSQJyiLObBOXjPbmDSEQAcOGvD/uiiYzz+SvWFa//JbJmQgmWNmEeC32bAOsIqau2i1HZ9+GP+WgGXpVXNF9qC3Cvsqav4asIpyyFkRwDZr+7iz31fRARkd24d2fKwY2yAmjU9c6595p1wz3iI/aufPJ1K/jW+tiBX3HEXUuHvZO6PLvI8ehK8qezkYoMemW9NlQg4OcjBlJCntGhcOvFARRj6VmpFImoH6HatYpegaZnW8kulJbMwvjtROpvYN7EiuMgoB3vv1Xgp+6hYVrzwPsweY1/I9Ut4AqeLSPeAb/6+0HBYSsGJL3XRt/7yu+qu+QoQc2OBis4sQle7aFeP5yPzqPAMFPc+wdCTA8lrjSs6wxjF307yg/fJMtG4="
+  file_glob: true
+  file: $NAME-$TRAVIS_TAG-$TARGET.*
+  on:
+    tags: true
+  provider: releases
+  skip_cleanup: true
+
+cache: cargo
+before_cache:
+  - chmod -R a+r $HOME/.cargo
+
+branches:
+  only:
+    - /^v?\d+\.\d+\.\d+.*$/
+    - master
