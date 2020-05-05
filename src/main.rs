@@ -7,7 +7,7 @@ use std::fs::File;
 use std::io::prelude::*;
 use anyhow::Context as _;
 
-use grep_into_table::generate_csv;
+use grep_into_table::generator::*;
 
 #[derive(StructOpt, Debug)]
 #[structopt(name = "grep_into_table")]
@@ -34,7 +34,7 @@ fn main() -> anyhow::Result<()> {
      .with_context(|| format!("Something went wrong reading file: {}", &opt.filename))?;
 
     // generate csv
-    generate_csv(&contents);
+    generate_textile(&contents);
 
     Ok(())
 }
