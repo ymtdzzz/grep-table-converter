@@ -6,6 +6,7 @@ use structopt::{clap, StructOpt};
 use std::fs::File;
 use anyhow::Context as _;
 use std::io::Write;
+use atty::Stream;
 
 use grep_table_converter::generator::*;
 use grep_table_converter::io::*;
@@ -28,20 +29,23 @@ struct Opt {
 fn main() -> anyhow::Result<()> {
     // initialize
     pretty_env_logger::init();
-    debug!("Applicatin start");
 
     let opt = Opt::from_args();
 
     let mode = Mode::from(&opt.mode)
         .with_context(|| "Failed to read mode.")?;
-    if opt.filename.is_none() && ! is_pipe() {
+    if opt.filename.is_none() && atty::is(Stream::Stdin) {
         Opt::clap().print_help()?;
         std::process::exit(1);
     }
 
     let content = match opt.filename {
         Some(fname) => read_from_file(&fname)?,
-        None => read_from_stdin()?,
+        None => {
+            let stdio = std::io::stdin();
+            let input = stdio.lock();
+            read_from_stdin(input)?
+        },
     };
     if content.is_empty() {
         Opt::clap().get_matches().usage();

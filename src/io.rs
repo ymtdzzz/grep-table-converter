@@ -1,21 +1,22 @@
-use std::io::{self, Read};
+use std::io::{Read, BufRead};
 use std::fs::File;
-use atty::Stream;
 use chrono::Utc;
 use anyhow::Context as _;
 
 use super::generator::Mode;
 
-pub fn read_from_stdin() -> anyhow::Result<String> {
+pub fn read_from_stdin<R>(mut reader: R) -> anyhow::Result<String>
+where
+    R: BufRead
+{
     let mut buf = String::new();
-    let stdin = io::stdin();
-    let mut handle = stdin.lock();
-    handle.read_to_string(&mut buf)?;
+    reader.read_to_string(&mut buf)?;
 
     Ok(buf)
 }
 
 pub fn read_from_file(filename: &String) -> anyhow::Result<String> {
+    // TODO: make testable
     let mut buf = String::new();
     let mut f = File::open(filename)
         .with_context(|| format!("Could not open file: {}", filename))?;
@@ -24,10 +25,6 @@ pub fn read_from_file(filename: &String) -> anyhow::Result<String> {
      .with_context(|| format!("Something went wrong reading file: {}", filename))?;
 
     Ok(buf)
-}
-
-pub fn is_pipe() -> bool {
-    ! atty::is(Stream::Stdin)
 }
 
 pub fn generate_filename(mode: &Mode) -> String {
