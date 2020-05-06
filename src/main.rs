@@ -34,7 +34,7 @@ fn main() -> anyhow::Result<()> {
      .with_context(|| format!("Something went wrong reading file: {}", &opt.filename))?;
 
     // generate csv
-    generate_textile(&contents);
+    generate_table(&contents, &Mode::CSV);
 
     Ok(())
 }
