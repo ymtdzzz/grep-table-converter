@@ -3,6 +3,12 @@ name = "grep-table-converter"
 version = "0.0.2"
 authors = ["zeroclock <zeroclock@icloud.com>"]
 edition = "2018"
+description = "A cli utility to convert grep result to table (csv, markdown, textile)."
+license = "MIT OR Apache-2.0"
+
+[[bin]]
+path = "src/main.rs"
+name = "gtc"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
