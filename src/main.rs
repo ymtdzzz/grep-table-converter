@@ -4,13 +4,11 @@ use log::*;
 use pretty_env_logger;
 use structopt::{clap, StructOpt};
 use std::fs::File;
-use std::io::prelude::*;
-use std::io::{self, Read, Write, BufReader};
 use anyhow::Context as _;
-use atty::Stream;
-use chrono::Utc;
+use std::io::Write;
 
 use grep_table_converter::generator::*;
+use grep_table_converter::io::*;
 
 #[derive(StructOpt, Debug)]
 #[structopt(name = "grep_table_converter")]
@@ -26,34 +24,6 @@ struct Opt {
     mode: String,
 }
 
-fn read_from_stdin() -> anyhow::Result<String> {
-    let mut buf = String::new();
-    let stdin = io::stdin();
-    let mut handle = stdin.lock();
-    handle.read_to_string(&mut buf)?;
-
-    Ok(buf)
-}
-
-fn read_from_file(filename: &String) -> anyhow::Result<String> {
-    let mut buf = String::new();
-    let mut f = File::open(filename)
-        .with_context(|| format!("Could not open file: {}", filename))?;
-
-    f.read_to_string(&mut buf)
-     .with_context(|| format!("Something went wrong reading file: {}", filename))?;
-
-    Ok(buf)
-}
-
-fn is_pipe() -> bool {
-    ! atty::is(Stream::Stdin)
-}
-
-fn generate_filename(mode: &Mode) -> String {
-    let formatted_date = Utc::now().format("%Y%m%d%H%M%S").to_string();
-    String::from("output_") + formatted_date.as_str() + mode.extension()
-}
 
 fn main() -> anyhow::Result<()> {
     // initialize
