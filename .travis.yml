@@ -9,7 +9,7 @@ rust:
 sudo: required
 env:
   global:
-    - NAME=grep-into-table
+    - NAME=gtc
 
 matrix:
   include:
