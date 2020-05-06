@@ -1,6 +1,6 @@
 [package]
 name = "grep-table-converter"
-version = "0.0.2"
+version = "0.0.3"
 authors = ["zeroclock <zeroclock@icloud.com>"]
 edition = "2018"
 description = "A cli utility to convert grep result to table (csv, markdown, textile)."
