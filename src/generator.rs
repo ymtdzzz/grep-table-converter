@@ -1,7 +1,7 @@
 use anyhow::Result;
 use anyhow::anyhow;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum Mode {
     CSV,
     MARKDOWN,
@@ -75,6 +75,61 @@ pub fn generate_table(content: &str, mode: &Mode) -> Result<String> {
 #[cfg(test)]
 mod test {
     use super::*;
+
+    #[test]
+    fn export_mode_enum() {
+        let mode = Mode::MARKDOWN;
+        assert_eq!("MARKDOWN", format!("{:?}", &mode))
+    }
+
+    #[test]
+    fn mode_from_valid_string() {
+        let mode1 = Mode::from("CsV");
+        let mode2 = Mode::from("markDoWN");
+        let mode3 = Mode::from("TEXtile");
+        if let Ok(mode) = mode1 {
+            assert_eq!(Mode::CSV, mode);
+        } else {
+            assert!(false);
+        }
+        if let Ok(mode) = mode2 {
+            assert_eq!(Mode::MARKDOWN, mode);
+        } else {
+            assert!(false);
+        }
+        if let Ok(mode) = mode3 {
+            assert_eq!(Mode::TEXTILE, mode);
+        } else {
+            assert!(false);
+        }
+    }
+
+    #[test]
+    fn mode_fron_invalid_string() {
+        let mode = Mode::from("invalid");
+        if let Ok(_) = mode {
+            assert!(false);
+        } else {
+            assert!(true);
+        }
+    }
+
+    #[test]
+    fn get_extension() {
+        let csv_mode = Mode::CSV;
+        let md_mode = Mode::MARKDOWN;
+        let txtile_mode = Mode::TEXTILE;
+
+        assert_eq!(".csv", csv_mode.extension());
+        assert_eq!(".md", md_mode.extension());
+        assert_eq!(".textile", txtile_mode.extension());
+    }
+
+    #[test]
+    fn debug_print_line() {
+        let line = Line { file_path: "src/test.rs", line_num: "124", remaining: "this is test code." };
+        assert_eq!("Line { file_path: \"src/test.rs\", line_num: \"124\", remaining: \"this is test code.\" }", format!("{:?}", line));
+    }
 
     #[test]
     fn csv_result() {
