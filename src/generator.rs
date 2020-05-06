@@ -16,6 +16,23 @@ impl Mode {
             Mode::TEXTILE => "|file_name|line_num|content|\n".to_string(),
         }
     }
+
+    pub fn from(input: &str) -> Result<Mode> {
+        match input.to_lowercase().as_str() {
+            "csv" => Ok(Mode::CSV),
+            "markdown" => Ok(Mode::MARKDOWN),
+            "textile" => Ok(Mode::TEXTILE),
+            _ => Err(anyhow!("mode must be csv or markdown or textile.")),
+        }
+    }
+
+    pub fn extension(&self) -> &str {
+        match self {
+            Mode::CSV => ".csv",
+            Mode::MARKDOWN => ".md",
+            Mode::TEXTILE => ".textile",
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -41,7 +58,7 @@ pub fn generate_table(content: &str, mode: &Mode) -> Result<String> {
         let splitted_line: Vec<&str> = line.split(":").collect();
 
         if splitted_line.len() < 3 {
-            return Err(anyhow!("Format of given line is invalid: {}", &line));
+            return Err(anyhow!("Invalid format.\nexpected: [file path]:[line number]:[code]\ngiven: {}", &content));
         }
 
         let line_data = Line {
@@ -52,7 +69,6 @@ pub fn generate_table(content: &str, mode: &Mode) -> Result<String> {
 
         result += line_data.format(mode).as_str();
     }
-    println!("{}", result);
     Ok(result)
 }
 
@@ -107,7 +123,7 @@ modules/hoge_module.rs:14:println!("this is test String.");"#;
     fn invalid_format() {
         let mode = Mode::CSV;
         let content = "This is a test for invalid format error.";
-        let expected_errmsg = format!("Format of given line is invalid: {}", &content);
+        let expected_errmsg = format!("Invalid format.\nexpected: [file path]:[line number]:[code]\ngiven: {}", &content);
         if let Err(e) = generate_table(&content, &mode) {
             assert_eq!(expected_errmsg, format!("{:?}", e));
         } else {
